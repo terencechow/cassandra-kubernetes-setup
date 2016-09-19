@@ -1,3 +1,7 @@
+This is largely based off the official cassandra repo and [this repo ](https://github.com/vyshane/cassandra-kubernetes).
+
+I just wanted a more custom entrypoint script and to document the whole process.
+
 Starting a Cassandra Cluster on Google Container Engine
 
 1. Go to http://console.cloud.google.com
