@@ -1,0 +1,19 @@
+# A service is a SET of pods.
+# A pod is a group of containers representing either an app or a part of an app.
+
+# Since a service is a SET of pods, kubernetes can be used to load balance a service.
+# ie direct traffic to some pods vs others that are experience high traffic
+
+# note the use of selector. It means any pod that identifies itself with the label
+# app=cassandra  will be part of this service
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: cassandra
+  name: cassandra
+spec:
+  ports:
+    - port: 9042
+  selector:
+    app: cassandra

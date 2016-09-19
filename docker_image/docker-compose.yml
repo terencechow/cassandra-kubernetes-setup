@@ -1,0 +1,70 @@
+# THIS IS NOT USED for Kubernetes cluster but is an example of what is needed
+# for a local 3 container cluster
+
+# This setup only for 3 containers on same machine, you may need
+# to set broadcast address and seeds as per the real ip addresses provided
+version: '2'
+services:
+  cassandra-1:
+    image: cassandra:3.7
+    container_name: cassandra-1
+    ports:
+      - "7000:7000" # internode communication
+      - "7001:7001" # internode communication
+      - "7199:7199" # for JMX (monitoring)
+      - "9042:9042" # for CQL
+      - "9160:9160" # for Thrift client API
+    volumes:
+      - /Users/terence/Downloads/cassandra_1:/var/lib/cassandra/data
+    environment:
+      - CASSANDRA_CLUSTER_NAME=db1
+      - CASSANDRA_BROADCAST_ADDRESS=cassandra-1
+      - CASSANDRA_NUM_TOKENS=256
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      - CASSANDRA_DC=datacenter1
+      - CASSANDRA_RACK=rack1
+    restart: always
+  cassandra-2:
+    image: cassandra:3.7
+    container_name: cassandra-2
+    ports:
+      - "6999:7000" # internode communication
+      - "7002:7001" # internode communication
+      - "7200:7199" # for JMX (monitoring)
+      - "9043:9042" # for CQL
+      - "9161:9160" # for Thrift client API
+    depends_on:
+      - cassandra-1
+    volumes:
+      - /Users/terence/Downloads/cassandra_2:/var/lib/cassandra/data
+    environment:
+      - CASSANDRA_CLUSTER_NAME=db1
+      - CASSANDRA_BROADCAST_ADDRESS=cassandra-2
+      - CASSANDRA_SEEDS=cassandra-1
+      - CASSANDRA_NUM_TOKENS=256
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      - CASSANDRA_DC=datacenter1
+      - CASSANDRA_RACK=rack1
+    restart: always
+  cassandra-3:
+    image: cassandra:3.7
+    container_name: cassandra-3
+    ports:
+      - "6998:7000" # internode communication
+      - "7003:7001" # internode communication
+      - "7201:7199" # for JMX (monitoring)
+      - "9044:9042" # for CQL
+      - "9162:9160" # for Thrift client API
+    depends_on:
+      - cassandra-2
+    volumes:
+      - /Users/terence/Downloads/cassandra_3:/var/lib/cassandra/data
+    environment:
+      - CASSANDRA_CLUSTER_NAME=db1
+      - CASSANDRA_BROADCAST_ADDRESS=cassandra-3
+      - CASSANDRA_SEEDS=cassandra-1
+      - CASSANDRA_NUM_TOKENS=256
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      - CASSANDRA_DC=datacenter1
+      - CASSANDRA_RACK=rack1
+    restart: always
